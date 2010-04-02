@@ -8,19 +8,18 @@ from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
 from django.conf import settings
 
-TMP_DIR = getattr(settings, 'TMP_DIR', '/tmp')
+REPORTS_TMP_DIR = getattr(settings, 'REPORTS_TMP_DIR', '/tmp')
+
+class NotAvailable(Exception):
+    pass
 
 class BaseReport(object):
     "A base class for reports to subclass."
-    def __init__(self, date=None, view=False, filename=None, recipients=None,
-                 report_args=None):
-        modules = self.__module__.split('.')
-        self.name = modules[len(modules) - 1]
-        frequency = modules[len(modules) - 2]
-        if not frequency in ('daily', 'weekly', 'monthly'):
-            raise NotImplementedError(
-                'This is a base class, and it cannot be directly initialized.'
-            )
+    def __init__(self, frequency, date=None, view=False, filename=None,
+                 recipients=None, report_args=None):
+        if not frequency in self.frequencies:
+            raise NotAvailable('The %s frequency is not available for the %s '
+                               'report.' % (frequency, self.name))
         self.frequency = frequency
         self.set_dates(date)
         self.view = view
@@ -41,8 +40,10 @@ class BaseReport(object):
         if self.view:
             return sys.stdout
         if not filename:
-            filename = '%s/report.%s.%s.%s.csv' % (TMP_DIR, self.frequency,
-                                                   self.name, self.date)
+            filename = os.path.join(REPORTS_TMP_DIR, 'report.%s.%s.%s.csv' % 
+                                    (self.frequency, self.name, self.date))
+        if '~' in filename:
+            filename = filename.replace('~', os.path.expanduser('~'))
         return open(filename, 'w')
     
     def set_dates(self, date):

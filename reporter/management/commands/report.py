@@ -66,19 +66,21 @@ class Command(BaseCommand):
         
         if options.get('list_all', False):
             # List all reports, printing their docstrings
-            print "Listing all available reports:\n"
+            print "Listing all available reports:"
             available_reports = reporter.get_all()
             frequencies = ['daily', 'weekly', 'monthly']
             for frq in frequencies:
                 reports_found = []
-                for report_name, report in avilable_reports.items():
+                for report_name, report in available_reports.items():
                     if frq in report.frequencies:
-                        reports_found.append('    %s - %s' % (name, doc))
-                print '%s:' % frq.capitalize()
-                for report in reports_found:
-                    print report
-                print '\n'
-            print ('For more information on how to run reports, use this '
+                        reports_found.append('    %s - %s' %
+                                             (report_name,
+                                              report.__doc__.strip()))
+                if reports_found:
+                    print '\n%s:' % frq.capitalize()
+                    for report in reports_found:
+                        print report
+            print ('\nFor more information on how to run reports, use this '
                    'command with the -h option.')
             exit(0)
         
@@ -104,9 +106,10 @@ class Command(BaseCommand):
         if recipients:
             recipients = recipients.split(',')
         
-        # Import the module for the requested report
-        module = '%s.%s.%s' % (REPORT_MODULE_PREFIX, frequency, name)
-        report_module = import_module(module)
-        report = report_module.report(date, view, filename, recipients,
-                                      report_args)
+        try:
+            report_class = reporter.get_report(name)
+            report = report_class(frequency, date, view, filename, recipients,
+                                  report_args)
+        except (reporter.NotRegistered, reporter.NotAvailable), e:
+            raise CommandError(e)
         report.run_report()

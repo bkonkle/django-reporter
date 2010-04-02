@@ -7,16 +7,18 @@ class AdminLogReport(reporter.BaseReport):
     """
     Send full admin log info for the day, broken down by user
     """
+    name = 'admin_log'
     frequencies = ['daily']
     
     def get_default_recipients(self):
         return ['brandon.konkle@gmail.com']
     
     def get_email_subject(self):
-        return '[%s] Admin log for %s' % (self.frequency, self.date)
+        return '[%s] Admin log for %s' % (self.frequency.capitalize(),
+                                          self.date)
     
     def get_data(self):
-        data = []
+        data = [('Username', 'Time', 'Action', 'Content Type', 'ID', 'Name')]
         actions = { 1: 'Add',
                     2: 'Change',
                     3: 'Delete', }
@@ -48,4 +50,4 @@ class AdminLogReport(reporter.BaseReport):
         
         return data
 
-reporter.register('admin_log', AdminLogReport)
+reporter.register(AdminLogReport)
