@@ -116,6 +116,9 @@ command.
 Methods
 -------
 
+These methods are required to be implemented in your subclass in order to
+generate reports.
+
 ``get_default_recipients``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
