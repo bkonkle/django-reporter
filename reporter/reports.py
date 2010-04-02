@@ -1,9 +1,9 @@
 from django.contrib.admin.models import LogEntry
 from django.core.exceptions import ObjectDoesNotExist
 
-from reporter import BaseReport
+import reporter
 
-class AdminLogReport(BaseReport):
+class AdminLogReport(reporter.BaseReport):
     """
     Send full admin log info for the day, broken down by user
     """
@@ -48,4 +48,4 @@ class AdminLogReport(BaseReport):
         
         return data
 
-report = AdminLogReport
+reporter.register('admin_log', AdminLogReport)

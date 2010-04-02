@@ -6,7 +6,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.importlib import import_module
 
-REPORT_MODULE_PREFIX = 'reporter.reports'
+import reporter
 
 class Command(BaseCommand):
     help = ('Runs reports, which are collected in the '
@@ -60,37 +60,22 @@ class Command(BaseCommand):
     )
     
     def handle(self, *args, **options):
+        # Autodiscover all reports by scanning INSTALLED_APPS for reports.py
+        # files.
+        reporter.autodiscover()
+        
         if options.get('list_all', False):
-            # Discover and list all reports, checking their validity
-            from reporter import reports
-            from reporter.utils import locate
+            # List all reports, printing their docstrings
             print "Listing all available reports:\n"
-            reports_found = {}
+            available_reports = reporter.get_all()
             frequencies = ['daily', 'weekly', 'monthly']
             for frq in frequencies:
-                reports_found[frq] = []
-            for report in locate('*.py', reports.__path__[0]):
-                if os.path.basename(report) == '__init__.py':
-                    continue
-                frequency = os.path.basename(os.path.dirname(report))
-                name = os.path.basename(report)[:-3]
-                module = '%s.%s.%s' % (REPORT_MODULE_PREFIX,
-                                       frequency,
-                                       name)
-                report_module = import_module(module)
-                valid = '\n        (invalid)'
-                doc = ''
-                if getattr(report_module, 'report', None):
-                    valid = ''
-                    doc = '\n        %s' % (
-                        report_module.report.__doc__.strip()
-                    )
-                reports_found[frequency].append(
-                    '    %s%s%s' % (name, valid, doc)
-                )
-            for frq in frequencies:
+                reports_found = []
+                for report_name, report in avilable_reports.items():
+                    if frq in report.frequencies:
+                        reports_found.append('    %s - %s' % (name, doc))
                 print '%s:' % frq.capitalize()
-                for report in reports_found[frq]:
+                for report in reports_found:
                     print report
                 print '\n'
             print ('For more information on how to run reports, use this '
