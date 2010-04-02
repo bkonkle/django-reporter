@@ -7,6 +7,8 @@ class AdminLogReport(BaseReport):
     """
     Send full admin log info for the day, broken down by user
     """
+    frequencies = ['daily']
+    
     def get_default_recipients(self):
         return ['brandon.konkle@gmail.com']
     
