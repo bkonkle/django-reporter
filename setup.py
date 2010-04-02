@@ -8,7 +8,7 @@ README = read('README.rst')
  
 setup(
     name = "django-reporter",
-    version = "0.1",
+    version = "0.2-alpha",
     url = 'http://github.com/pegasus/django-reporter',
     license = 'BSD',
     description = "Custom email-based reports for any Django project.",
