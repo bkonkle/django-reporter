@@ -18,7 +18,7 @@ class AdminLogReport(reporter.BaseReport):
                                           self.date)
     
     def get_data(self):
-        data = [('Username', 'Time', 'Action', 'Content Type', 'ID', 'Name')]
+        data = [['Username', 'Time', 'Action', 'Content Type', 'ID', 'Name']]
         actions = { 1: 'Add',
                     2: 'Change',
                     3: 'Delete', }
@@ -45,8 +45,8 @@ class AdminLogReport(reporter.BaseReport):
             
             time = log.action_time.strftime("%H:%M")
             
-            data.append((log.user, time, actions[log.action_flag],
-                         log.content_type.name, log.object_id, obj_name))
+            data.append([log.user, time, actions[log.action_flag],
+                         log.content_type.name, log.object_id, obj_name])
         
         return data
 

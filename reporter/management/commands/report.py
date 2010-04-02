@@ -9,25 +9,25 @@ from django.utils.importlib import import_module
 import reporter
 
 class Command(BaseCommand):
-    help = ('Runs reports, which are collected in the '
-            'reporter module. Valid frequencies are "daily", '
-            '"weekly", and "monthly". By default, the reports are emailed to '
-            "the report's default recipients. This can be overridden through "
-            'options.  Additional arguments after the report name will be '
-            'passed to the report.')
+    help = ('Runs reports, which are registered in reports.py files within'
+            'installed apps. Valid frequencies are "daily", "weekly", and '
+            '"monthly". By default, the reports are emailed to the report\'s '
+            'default recipients. This can be overridden through options.  '
+            'Additional arguments after the report name will be passed to '
+            'the report.')
     
     args = 'FREQUENCY REPORT_NAME [REPORT ARGS]'
     
     option_list = BaseCommand.option_list + (
         make_option(
-            '--view',
+            '-V', '--view',
             action='store_true',
             dest='view',
             help=('Send the data to stdout instead of emailing or saving to a'
                   ' file.')
         ),
         make_option(
-            '--filename',
+            '-f', '--filename',
             action='store',
             dest='filename',
             metavar='FILE',
@@ -35,27 +35,25 @@ class Command(BaseCommand):
                   ' filename.')
         ),
         make_option(
-            '--recipients',
+            '-r', '--recipients',
             action='store',
             dest='recipients',
             metavar='RECIPIENTS',
             help=('Override the default recipients for the report. Seperate '
-                  'each email address wth a comma. Do not use spaces.')
+                  'each email address with a comma. Do not use spaces.')
         ),
         make_option(
-            '--list-all',
+            '-l', '--list-all',
             action='store_true',
             dest='list_all',
-            help=('List all available reports, and then exit. If a report has'
-                  ' not yet been converted to the new format, it will have '
-                  'the words (Invalid) printed next to it.')
+            help='List all available reports, and then exit.'
         ),
         make_option(
-            '--date',
+            '-d', '--date',
             action='store',
             dest='date',
             metavar='YYYY-MM-DD',
-            help=('Provide a date to run the report for.')
+            help='Provide a date to run the report for.'
         ),
     )
     
