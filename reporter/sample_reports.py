@@ -8,7 +8,7 @@ class AdminLogReport(reporter.BaseReport):
     Send full admin log info for the day, broken down by user
     """
     name = 'admin_log'
-    frequencies = ['daily']
+    frequencies = ['daily', 'weekly', 'monthly']
     
     def get_default_recipients(self):
         return ['brandon.konkle@gmail.com']
@@ -23,11 +23,22 @@ class AdminLogReport(reporter.BaseReport):
                     2: 'Change',
                     3: 'Delete', }
         
-        logs = LogEntry.objects.filter(
-            action_time__day=self.date.day,
-            action_time__month=self.date.month,
-            action_time__year=self.date.year
-        ).order_by('user')
+        if self.frequency == 'daily':
+            logs = LogEntry.objects.filter(
+                action_time__day=self.date.day,
+                action_time__month=self.date.month,
+                action_time__year=self.date.year,
+            ).order_by('user')
+        elif self.frequency == 'weekly':
+            logs = LogEntry.objects.filter(
+                action_time__lt=self.tomorrow,
+                action_time__gt=self.one_week,
+            ).order_by('user')
+        elif self.frequency == 'monthly':
+            logs = LogEntry.objects.filter(
+                action_time__lt=self.tomorrow,
+                action_time__gt=self.one_month,
+            ).order_by('user')
         
         for log in logs:
             objtype = log.content_type.name

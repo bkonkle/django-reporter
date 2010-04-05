@@ -8,7 +8,9 @@ from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
 from django.conf import settings
 
-REPORTS_TMP_DIR = getattr(settings, 'REPORTS_TMP_DIR', '/tmp')
+REPORTER_TMP_DIR = getattr(settings, 'REPORTS_TMP_DIR', '/tmp')
+REPORTER_FROM_EMAIL = getattr(settings, 'REPORTS_FROM_EMAIL',
+                             settings.ADMINS[0][1])
 
 class NotAvailable(Exception):
     pass
@@ -40,7 +42,7 @@ class BaseReport(object):
         if self.view:
             return sys.stdout
         if not filename:
-            filename = os.path.join(REPORTS_TMP_DIR, 'report.%s.%s.%s.csv' % 
+            filename = os.path.join(REPORTER_TMP_DIR, 'report.%s.%s.%s.csv' % 
                                     (self.frequency, self.name, self.date))
         if '~' in filename:
             filename = filename.replace('~', os.path.expanduser('~'))
@@ -97,7 +99,7 @@ class BaseReport(object):
             message = EmailMessage(
                 subject=subject,
                 body='Please review the attached report.\n\n',
-                from_email='webmaster@pegasusnews.com',
+                from_email=REPORTER_FROM_EMAIL,
                 to=self.recipients,
                 attachments=[('%s.%s.csv' % (self.name, self.date),
                               f.read(), 'text/plain')]
