@@ -14,7 +14,7 @@ registered_reports = {}
 def register(report):
     if report.name in registered_reports.keys():
         raise AlreadyRegistered('Report %s is already registered.' %
-                                report_name)
+                                report.name)
     registered_reports[report.name] = report
 
 def unregister(report_name):
