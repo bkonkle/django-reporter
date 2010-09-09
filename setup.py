@@ -1,5 +1,7 @@
 import os
 from distutils.core import setup
+
+from reporter import VERSION
  
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -7,8 +9,8 @@ def read(fname):
 README = read('README.rst')
  
 setup(
-    name = "django-reporter",
-    version = "0.2-alpha",
+    name = 'django-reporter',
+    version = '.'.join(map(str, VERSION)),
     url = 'http://github.com/pegasus/django-reporter',
     license = 'BSD',
     description = "Custom email-based reports for any Django project.",
