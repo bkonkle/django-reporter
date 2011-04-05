@@ -3,12 +3,12 @@ import os
 import sys
 import csv
 import datetime
+from tempfile import NamedTemporaryFile
 
 from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
 from django.conf import settings
 
-REPORTER_TMP_DIR = getattr(settings, 'REPORTS_TMP_DIR', '/tmp')
 REPORTER_FROM_EMAIL = getattr(settings, 'REPORTS_FROM_EMAIL',
                              settings.ADMINS[0][1])
 
@@ -41,9 +41,11 @@ class BaseReport(object):
         """
         if self.view:
             return sys.stdout
+        
         if not filename:
-            filename = os.path.join(REPORTER_TMP_DIR, 'report.%s.%s.%s.csv' % 
-                                    (self.frequency, self.name, self.date))
+            # If the results shouldn't be saved to a file, return a named
+            # tempfile
+            return NamedTemporaryFile(delete=False)
         if '~' in filename:
             filename = filename.replace('~', os.path.expanduser('~'))
         return open(filename, 'w')

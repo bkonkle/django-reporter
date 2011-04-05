@@ -210,16 +210,7 @@ Provide a date to run the report for.
 Settings
 ********
 
-There are two settings available, both with sensible defaults.
-
-``REPORTER_TMP_DIR``
---------------------
-
-:Default: /tmp
-
-The temporary directory that Django-Reporter builds the reports in,
-
-``REPORTER_FROM_EMAIL``
+``REPORTS_FROM_EMAIL``
 -----------------------
 
 :Default: settings.ADMINS[0][1]
